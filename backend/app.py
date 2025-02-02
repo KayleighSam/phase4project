@@ -21,7 +21,7 @@ CORS(app, resources={r"/*": {
 }})
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', 'postgresql://realestatedb_0odm_user:v8ZRjyj4aYzjpGWncgAeZ7yrWQGoC8Ja@dpg-cufo3kjtq21c73f81ba0-a.oregon-postgres.render.com/realestatedb_0odm')
+app.config['SQLALCHEMY_DATABASE_URI'] =  'postgresql://realestatedb_snzt_user:GCn0MssOcStVHllpDGaDErfSVOnQLTD6@dpg-cuftab5ds78s73fp10i0-a.oregon-postgres.render.com/realestatedb_snzt'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "your_default_secret_key")
 
