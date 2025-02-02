@@ -14,8 +14,8 @@ Booking Management:
 [*https://github.com/KayleighSam/saucysamphase3project.git*]
 
 
-**Video recording of the presentation**-
-[https://drive.google.com/file/d/1Hr7GGlW179nZKw0DQ8y7Hz1YNxisWZJf/view?usp=sharing]
+**(PROJECT PRESENTATION)Video recording of the presentation**-
+[https://drive.google.com/file/d/1DD6W58QbJbtvxPBs_5Yerm6tRSn9BTU8/view?usp=sharing]
 
 
 
@@ -24,7 +24,7 @@ Frontend: React.js, Bootstrap, CSS, JavaScript, Toasify
 Backend: Flask, SQLite3, Python
 
 # Setup Instructions
-Clone the repository: git clone [*https://github.com/KayleighSam/saucysamphase3project.git*]
+Clone the repository: git clone [*https://github.com/KayleighSam/phase4project*]
 Install dependencies:
 Navigate to the backend  directory: 
 db migrate 
