@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ClientLogin = () => {
   const [email, setEmail] = useState("");
@@ -17,13 +20,14 @@ const ClientLogin = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-        credentials: "include", // Required for CORS with authentication
+        credentials: "include",
       });
 
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Backend Error:", errorData);
         setError("Invalid email or password. Please try again.");
+        toast.error("Invalid email or password. Please try again.");
         return;
       }
 
@@ -32,19 +36,22 @@ const ClientLogin = () => {
 
       if (data && data.access_token) {
         localStorage.setItem("token", data.access_token);
-        navigate("/user-dashboard");
+        toast.success("Login successful! Redirecting...");
+        setTimeout(() => {
+          navigate("/user-dashboard");
+        }, 1000);
       } else {
         setError("Invalid response format from the server");
       }
     } catch (error) {
       console.error("Error logging in:", error);
       setError("Something went wrong. Please try again later.");
+      toast.error("Something went wrong. Please try again later.");
     }
   };
 
   return (
     <div className="container mt-5">
-      {/* Navbar with Home link */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">
         <a className="navbar-brand" href="/">Real Estate</a>
         <div className="collapse navbar-collapse">
@@ -110,6 +117,9 @@ const ClientLogin = () => {
           </div>
         </div>
       </div>
+
+      {/* Toastify container for displaying toasts */}
+      <ToastContainer />
     </div>
   );
 };

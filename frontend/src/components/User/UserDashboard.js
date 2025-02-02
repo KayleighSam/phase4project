@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import UserNav from "./UserNav";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UserDashboard = () => {
   const [properties, setProperties] = useState([]);
@@ -9,36 +11,30 @@ const UserDashboard = () => {
   const [showBookModal, setShowBookModal] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [userName, setUserName] = useState(""); // Set empty initially
-  const [authToken, setAuthToken] = useState(localStorage.getItem("token")); // Retrieve JWT token from localStorage
-  const [phoneNumber, setPhoneNumber] = useState(""); // Phone number state for booking
-  const [userFullName, setUserFullName] = useState(""); // User full name for booking
+  const [userName, setUserName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [userFullName, setUserFullName] = useState("");
 
   useEffect(() => {
-    // Fetch the current user's info if there's an auth token
-    if (authToken) {
-      fetch("http://127.0.0.1:5000/profile", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${authToken}`,
-        },
-        credentials: "include", // Ensure credentials are included in the request
+    // Fetch user profile data
+    fetch("http://127.0.0.1:5000/profile", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.name) {
+          setUserName(data.name);
+          setUserFullName(data.name);
+        } else {
+          console.error("Failed to fetch user profile");
+        }
       })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.name) {
-            setUserName(data.name);
-            setUserFullName(data.name); // Save user's full name for booking
-          } else {
-            console.error("Failed to fetch user profile");
-          }
-        })
-        .catch((error) => console.error("Error fetching user profile:", error));
-    }
+      .catch((error) => console.error("Error fetching user profile:", error));
 
-    // Fetch property listings
+    // Fetch properties
     fetch("http://127.0.0.1:5000/properties", {
-      credentials: "include", // Include credentials in the request
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
@@ -46,7 +42,7 @@ const UserDashboard = () => {
         setFilteredProperties(data.properties);
       })
       .catch((error) => console.error("Error fetching properties:", error));
-  }, [authToken]);
+  }, []);
 
   const handleViewClick = (property) => {
     setSelectedProperty(property);
@@ -70,39 +66,45 @@ const UserDashboard = () => {
   };
 
   const handleConfirmBooking = () => {
+    if (!phoneNumber || !userFullName) {
+      toast.error("Please fill in your full name and phone number.");
+      return;
+    }
+
     const bookingData = {
-      user_name: userFullName,  // Include full name in the booking
+      user_name: userFullName,
       property_id: selectedProperty.property_id,
-      phone_number: phoneNumber, // Use phone number state
+      phone_number: phoneNumber,
     };
 
+    // Send booking data to the backend
     fetch("http://127.0.0.1:5000/bookings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${authToken}`,
+        "Authorization": `Bearer ${localStorage.getItem("access_token")}`, // Assuming JWT is stored in localStorage
       },
       body: JSON.stringify(bookingData),
-      credentials: "include", // Ensure credentials are included in the request
+      credentials: "include",
     })
       .then((response) => response.json())
       .then((data) => {
         if (data.message === "Booking created successfully") {
-          alert("Booking confirmed!");
+          toast.success("Booking confirmed successfully!");
           handleCloseBookModal();
         } else {
-          alert("Error: " + data.message);
+          toast.error(`Error: ${data.message || "Something went wrong"}`);
         }
       })
-      .catch((error) => console.error("Error making booking:", error));
+      .catch((error) => {
+        console.error("Error making booking:", error);
+        toast.error("An error occurred while making the booking.");
+      });
   };
 
   return (
     <div>
-      {/* User Navigation */}
       <UserNav />
-
-      {/* Welcome Section */}
       <div className="container mt-4">
         <div className="alert alert-primary text-center">
           <h2>Welcome, {userName || "User"}!</h2>
@@ -110,11 +112,9 @@ const UserDashboard = () => {
         </div>
       </div>
 
-      {/* Dashboard Content */}
       <div className="container mt-4">
         <h1 className="mb-4">Available Properties</h1>
 
-        {/* Search Bar */}
         <div className="mb-4">
           <input
             type="text"
@@ -159,9 +159,7 @@ const UserDashboard = () => {
               </div>
             ))
           ) : (
-            <p className="text-center text-muted">
-              No properties available at the moment.
-            </p>
+            <p className="text-center text-muted">No properties available at the moment.</p>
           )}
         </div>
       </div>
@@ -190,7 +188,7 @@ const UserDashboard = () => {
                 className="img-fluid rounded mb-4"
               />
               <p>
-                <strong>Price:</strong> ${selectedProperty?.price}
+                <strong>Price:</strong> {selectedProperty?.price}
               </p>
               <p>
                 <strong>Location:</strong> {selectedProperty?.location}
@@ -222,7 +220,7 @@ const UserDashboard = () => {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Book {selectedProperty?.title}</h5>
+              <h5 className="modal-title">Confirm Booking</h5>
               <button
                 type="button"
                 className="btn-close"
@@ -230,50 +228,43 @@ const UserDashboard = () => {
               ></button>
             </div>
             <div className="modal-body">
-              <form>
-                <div className="mb-3">
-                  <label htmlFor="formName" className="form-label">
-                    Your Full Name
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="formName"
-                    value={userFullName}
-                    onChange={(e) => setUserFullName(e.target.value)}
-                    placeholder="Enter your full name"
-                  />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="formPhone" className="form-label">
-                    Your Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    className="form-control"
-                    id="formPhone"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="Enter your phone number"
-                  />
-                </div>
-                <div className="d-flex justify-content-between">
-                  <button
-                    type="button"
-                    className="btn btn-primary w-48"
-                    onClick={handleConfirmBooking}
-                  >
-                    Confirm Booking
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary w-48"
-                    onClick={handleCloseBookModal}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
+              <p><strong>Property:</strong> {selectedProperty?.title}</p>
+              <div className="mb-3">
+                <label htmlFor="userName" className="form-label">Your Name</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="userName"
+                  value={userFullName}
+                  onChange={(e) => setUserFullName(e.target.value)}
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="phoneNumber" className="form-label">Phone Number</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="phoneNumber"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCloseBookModal}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleConfirmBooking}
+              >
+                Confirm Booking
+              </button>
             </div>
           </div>
         </div>

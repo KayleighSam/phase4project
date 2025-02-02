@@ -12,18 +12,24 @@ const ManageRequests = () => {
       try {
         const response = await fetch('http://127.0.0.1:5000/bookings', {
           method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
 
         if (!response.ok) {
-          const errorData = await response.text(); // Read the response as text (to handle HTML errors)
-          throw new Error(errorData || 'Failed to fetch bookings');
+          const errorData = await response.text();
+          throw new Error(errorData || '');
         }
 
-        // Attempt to parse the JSON data
         const data = await response.json();
-        setBookings(data.bookings);
+        if (data && data.bookings) {
+          setBookings(data.bookings);
+        } else {
+          throw new Error('Invalid response format');
+        }
       } catch (error) {
-        setError(error.message);
+        setError(error.message || 'An error occurred while fetching bookings.');
         console.error('Error fetching bookings:', error);
       } finally {
         setLoading(false);
@@ -33,50 +39,104 @@ const ManageRequests = () => {
     fetchBookings();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="container">
-        <AdminHeader />
-        <AdminNav />
-        <div className="admin-content">
-          <h3>Loading...</h3>
-        </div>
-      </div>
-    );
-  }
+  const handleDeleteBooking = async (bookingId) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this booking?');
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/bookings/${bookingId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        setBookings((prevBookings) =>
+          prevBookings.filter((booking) => booking.booking_id !== bookingId)
+        );
+      } else {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Failed to delete booking');
+      }
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+      setError(error.message || 'An error occurred while deleting booking.');
+    }
+  };
+
+  const handleUpdateStatus = async (bookingId, newStatus) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/bookings/${bookingId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        setBookings((prevBookings) =>
+          prevBookings.map((booking) =>
+            booking.booking_id === bookingId ? { ...booking, status: newStatus } : booking
+          )
+        );
+      } else {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Failed to update booking status');
+      }
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+      setError(error.message || 'An error occurred while updating booking status.');
+    }
+  };
 
   return (
-    <div className="container">
+    <div>
       <AdminHeader />
       <AdminNav />
-      <div className="admin-content">
-        <h3>Manage Requests</h3>
-        {error && <p className="text-danger">Error: {error}</p>}
-
-        {bookings.length === 0 ? (
-          <p>No bookings available.</p>
-        ) : (
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">Booking ID</th>
-                <th scope="col">Property ID</th>
-                <th scope="col">Phone Number</th>
-                <th scope="col">Booking Date</th>
+      <div className="container">
+        <h1>Manage Requests</h1>
+        {loading && <p>Loading...</p>}
+        {error && <p>{error}</p>}
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Property ID</th>
+              <th>Phone Number</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bookings.map((booking) => (
+              <tr key={booking.booking_id}>
+                <td>{booking.booking_id}</td>
+                <td>{booking.property_id}</td>
+                <td>{booking.phone_number}</td>
+                <td>
+                  <select
+                    value={booking.status}
+                    onChange={(e) => handleUpdateStatus(booking.booking_id, e.target.value)}
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </td>
+                <td>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDeleteBooking(booking.booking_id)}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {bookings.map((booking) => (
-                <tr key={booking.booking_id}>
-                  <td>{booking.booking_id}</td>
-                  <td>{booking.property_id}</td>
-                  <td>{booking.phone_number}</td>
-                  <td>{new Date(booking.booking_date).toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

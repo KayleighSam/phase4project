@@ -5,15 +5,10 @@ const AdminNav = () => {
   const navigate = useNavigate();
 
   const handleLogoutClick = () => {
-    // Confirm logout action
     const confirmLogout = window.confirm("Are you sure you want to log out?");
-    
     if (confirmLogout) {
-      // Clear the token and redirect to the home page
-      localStorage.removeItem('access_token'); // Remove token from localStorage
-      navigate("/", { replace: true }); // Redirect to the home page
-    } else {
-      console.log("Logout canceled.");
+      localStorage.removeItem("access_token");
+      navigate("/", { replace: true });
     }
   };
 
@@ -41,7 +36,7 @@ const AdminNav = () => {
                 className="nav-link"
                 to="/admin-dashboard"
                 style={({ isActive }) => ({
-                  fontWeight: isActive ? 'bold' : 'normal', // Styling for active link
+                  fontWeight: isActive ? "bold" : "normal",
                 })}
               >
                 Dashboard
@@ -52,20 +47,31 @@ const AdminNav = () => {
                 className="nav-link"
                 to="/admin-dashboard/manage-properties"
                 style={({ isActive }) => ({
-                  fontWeight: isActive ? 'bold' : 'normal',
+                  fontWeight: isActive ? "bold" : "normal",
                 })}
               >
                 Manage Properties
               </NavLink>
             </li>
             <li className="nav-item">
-              <a
-                href="#"
-                className="nav-link text-danger"
+              <NavLink
+                className="nav-link"
+                to="/admin-dashboard/manage-requests"
+                style={({ isActive }) => ({
+                  fontWeight: isActive ? "bold" : "normal",
+                })}
+              >
+                Manage Requests
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <button
+                className="nav-link btn btn-link text-danger"
                 onClick={handleLogoutClick}
+                style={{ textDecoration: "none" }}
               >
                 Logout
-              </a>
+              </button>
             </li>
           </ul>
         </div>

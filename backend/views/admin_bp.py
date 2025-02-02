@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
-from models import db, User
+from models import db, User, Property
 
 admin_bp = Blueprint('admin_bp', __name__)
 
@@ -21,6 +21,7 @@ def admin_login():
         "email": admin.email,
         "role": "admin"
     }), 200
+
 
 # ✅ Register a New Admin (Requires Admin Privileges)
 @admin_bp.route('/admin/register', methods=['POST'])
@@ -45,6 +46,7 @@ def register_admin():
     db.session.commit()
     return jsonify(message="Admin user created successfully"), 201
 
+
 # ✅ Get All Users (Admins Only)
 @admin_bp.route('/admin/users', methods=['GET'])
 @jwt_required()
@@ -57,18 +59,19 @@ def list_users():
     user_list = [{"user_id": user.user_id, "name": user.name, "email": user.email, "role": user.role} for user in users]
     return jsonify(users=user_list), 200
 
-# ✅ Delete a User (Admins Only)
-@admin_bp.route('/admin/delete/<int:user_id>', methods=['DELETE'])
+
+# ✅ Delete a Property (Admins Only)
+@admin_bp.route('/property/<int:property_id>', methods=['DELETE'])
 @jwt_required()
-def delete_user(user_id):
+def delete_property(property_id):
     claims = get_jwt()
     if claims.get("role") != "admin":
         return jsonify(message="Access denied. Admins only."), 403
 
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify(message="User not found"), 404
+    property = Property.query.get(property_id)
+    if not property:
+        return jsonify(message="Property not found"), 404
 
-    db.session.delete(user)
+    db.session.delete(property)
     db.session.commit()
-    return jsonify(message="User deleted successfully"), 200
+    return jsonify(message="Property deleted successfully"), 200

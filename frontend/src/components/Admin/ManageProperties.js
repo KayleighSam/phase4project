@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminHeader from './AdminHeader';
 import AdminNav from './AdminNav';
+import { FaTrashAlt, FaEdit } from 'react-icons/fa'; // Importing icons for delete and edit
 
 const ManageProperties = () => {
   const [properties, setProperties] = useState([]);
@@ -48,8 +49,8 @@ const ManageProperties = () => {
   };
 
   // Handle delete property
-  const handleDelete = async (id) => {
-    if (!id) {
+  const handleDelete = async (propertyId) => {
+    if (!propertyId) {
       setError("Property ID is missing.");
       return;
     }
@@ -57,15 +58,19 @@ const ManageProperties = () => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/property/${id}`, {
+      const response = await fetch(`http://127.0.0.1:5000/property/${propertyId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("access_token")}`, // Include JWT token for authentication
+        },
       });
 
       if (response.ok) {
-        setProperties(properties.filter(property => property.id !== id));
-        setFilteredProperties(filteredProperties.filter(property => property.id !== id));
+        setProperties(properties.filter(property => property.property_id !== propertyId));
+        setFilteredProperties(filteredProperties.filter(property => property.property_id !== propertyId));
       } else {
-        setError("Failed to delete property.");
+        const data = await response.json();
+        setError(data.message || 'Failed to delete property.');
       }
     } catch (err) {
       setError('Server error. Please try again later.');
@@ -82,7 +87,7 @@ const ManageProperties = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/property/${editingProperty.id}`, {
+      const response = await fetch(`http://127.0.0.1:5000/property/${editingProperty.property_id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -146,7 +151,7 @@ const ManageProperties = () => {
             <tbody>
               {filteredProperties.length > 0 ? (
                 filteredProperties.map((property) => (
-                  <tr key={property.id}>
+                  <tr key={property.property_id}>
                     <td>
                       {property.image_url ? (
                         <img src={property.image_url} alt={property.title} className="img-fluid" style={{ maxWidth: '100px' }} />
@@ -161,8 +166,12 @@ const ManageProperties = () => {
                     <td>{property.type}</td>
                     <td>{property.availability_status}</td>
                     <td>
-                      <button className="btn btn-warning btn-sm" onClick={() => handleEdit(property)}>Edit</button>
-                      <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(property.id)}>Delete</button>
+                      <button className="btn btn-warning btn-sm" onClick={() => handleEdit(property)}>
+                        <FaEdit /> Edit
+                      </button>
+                      <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(property.property_id)}>
+                        <FaTrashAlt /> Delete
+                      </button>
                     </td>
                   </tr>
                 ))

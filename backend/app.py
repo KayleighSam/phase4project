@@ -21,7 +21,7 @@ CORS(app, resources={r"/*": {
 }})
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///real_estate.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI', 'postgresql://realestatedb_0odm_user:v8ZRjyj4aYzjpGWncgAeZ7yrWQGoC8Ja@dpg-cufo3kjtq21c73f81ba0-a.oregon-postgres.render.com/realestatedb_0odm')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "your_default_secret_key")
 
@@ -34,9 +34,9 @@ app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", 'smtp.gmail.com')
 app.config["MAIL_PORT"] = os.getenv("MAIL_PORT", 587)
 app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", True)
 app.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", False)
-app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "samson.wanjiru@student.moringaschool.com")  # Replace with your email
-app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "your_email_password")  # Replace with your email password
-app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER", "samson.wanjiru@student.moringaschool.com")  # Replace with your email
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "samson.wanjiru@student.moringaschool.com")  
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "awot isoc ibax nnjq")  
+app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_DEFAULT_SENDER", "samson.wanjiru@student.moringaschool.com") 
 
 # Initialize extensions
 db.init_app(app)  # Initialize the database

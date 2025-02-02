@@ -96,7 +96,7 @@ def create_booking():
     if not property:
         return jsonify(message="Property not found"), 404
 
-    # Create a new booking
+    # Create a new booking with initial status as 'Pending'
     new_booking = Booking(
         user_id=current_user_id,
         property_id=property.property_id,
@@ -111,7 +111,7 @@ def create_booking():
 
 
 # Get all bookings for the current user (requires authentication)
-@user_bp.route('/bookings', methods=['GET'])
+@user_bp.route('/bookings/user', methods=['GET'])
 @jwt_required()
 def get_user_bookings():
     current_user_id = get_jwt_identity()
@@ -131,3 +131,46 @@ def get_user_bookings():
     ]
     
     return jsonify(bookings=bookings_list), 200
+
+
+# Get all bookings (public endpoint, no authentication required)
+@user_bp.route('/bookings', methods=['GET'])
+def get_all_bookings():
+    # Get all bookings
+    bookings = Booking.query.all()
+
+    # Return booking details
+    bookings_list = [
+        {
+            "booking_id": booking.booking_id,
+            "property_id": booking.property_id,
+            "phone_number": booking.phone_number,
+            "booking_date": booking.booking_date
+        }
+        for booking in bookings
+    ]
+    
+    return jsonify(bookings=bookings_list), 200
+
+
+# Delete a booking (requires authentication)
+@user_bp.route('/bookings/<int:booking_id>', methods=['DELETE'])
+@jwt_required()
+def delete_booking(booking_id):
+    current_user_id = get_jwt_identity()
+
+    # Find the booking by ID
+    booking = Booking.query.get(booking_id)
+    
+    if not booking:
+        return jsonify(message="Booking not found"), 404
+    
+    # Check if the current user owns this booking
+    if booking.user_id != current_user_id:
+        return jsonify(message="You do not have permission to delete this booking."), 403
+
+    # Delete the booking
+    db.session.delete(booking)
+    db.session.commit()
+
+    return jsonify(message="Booking deleted successfully"), 200
