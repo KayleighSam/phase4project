@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
     // Fetch user data if token is valid
     const fetchUserData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/user', {
+        const response = await fetch('https://phase4project-1.onrender.com/user', {
           headers: {
             Authorization: `Bearer ${storedToken}`,
           },

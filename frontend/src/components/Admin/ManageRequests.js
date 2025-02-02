@@ -10,7 +10,7 @@ const ManageRequests = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/bookings', {
+        const response = await fetch('https://phase4project-1.onrender.com/bookings', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const ManageRequests = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/bookings/${bookingId}`, {
+      const response = await fetch(`https://phase4project-1.onrender.com/bookings/${bookingId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ const ManageRequests = () => {
 
   const handleUpdateStatus = async (bookingId, newStatus) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/bookings/${bookingId}/status`, {
+      const response = await fetch(`https://phase4project-1.onrender.com/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

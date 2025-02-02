@@ -10,7 +10,7 @@ const EditProperty = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/admin/properties/${id}`, {
+        const response = await axios.get(`https://phase4project-1.onrender.com/admin/properties/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` },
         });
         setFormData(response.data.property);
@@ -26,7 +26,7 @@ const EditProperty = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:5000/admin/properties/${id}`,
+        `http://https://phase4project-1.onrender.com/admin/properties/${id}`,
         formData,
         { headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` } }
       );

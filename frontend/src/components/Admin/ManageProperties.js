@@ -17,7 +17,7 @@ const ManageProperties = () => {
 
   const fetchProperties = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/properties', {
+      const response = await fetch('https://phase4project-1.onrender.com/properties', {
         method: 'GET',
       });
 
@@ -58,7 +58,7 @@ const ManageProperties = () => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/property/${propertyId}`, {
+      const response = await fetch(`https://phase4project-1.onrender.com/property/${propertyId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem("access_token")}`, // Include JWT token for authentication
@@ -87,7 +87,7 @@ const ManageProperties = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://127.0.0.1:5000/property/${editingProperty.property_id}`, {
+      const response = await fetch(`https://phase4project-1.onrender.com/property/${editingProperty.property_id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

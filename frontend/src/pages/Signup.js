@@ -36,7 +36,7 @@ const Signup = () => {
 
     try {
       // Send data to backend for sign-up using fetch
-      const response = await fetch('http://127.0.0.1:5000/register', {
+      const response = await fetch('https://phase4project-1.onrender.com/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ const Signup = () => {
         setSuccess("Registration successful! A confirmation email has been sent.");
         
         // Send confirmation email (replace this with actual email service logic if needed)
-        const emailResponse = await fetch('http://127.0.0.1:5000/send-email', {
+        const emailResponse = await fetch('https://phase4project-1.onrender.com/send-email', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -17,7 +17,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     // Fetch user profile data
-    fetch("http://127.0.0.1:5000/profile", {
+    fetch("https://phase4project-1.onrender.com/profile", {
       method: "GET",
       credentials: "include",
     })
@@ -33,7 +33,7 @@ const UserDashboard = () => {
       .catch((error) => console.error("Error fetching user profile:", error));
 
     // Fetch properties
-    fetch("http://127.0.0.1:5000/properties", {
+    fetch("https://phase4project-1.onrender.com/properties", {
       credentials: "include",
     })
       .then((response) => response.json())
@@ -78,7 +78,7 @@ const UserDashboard = () => {
     };
 
     // Send booking data to the backend
-    fetch("http://127.0.0.1:5000/bookings", {
+    fetch("https://phase4project-1.onrender.com/bookings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

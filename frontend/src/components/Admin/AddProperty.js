@@ -29,7 +29,7 @@ const AddProperty = () => {
     const token = localStorage.getItem('token');  // Assuming JWT is stored in localStorage
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/property', {
+      const response = await fetch('https://phase4project-1.onrender.com/property', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

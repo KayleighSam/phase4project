@@ -35,7 +35,7 @@ const ManageUsers = () => {
       }
 
       try {
-        const response = await fetch("http://127.0.0.1:5000/admin/users", {
+        const response = await fetch("https://phase4project-1.onrender.com/admin/users", {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`, // Include token in request headers

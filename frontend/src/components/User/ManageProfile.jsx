@@ -22,7 +22,7 @@ const ManageProfile = () => {
       return;
     }
 
-    fetch("http://127.0.0.1:5000/profile", {
+    fetch("https://phase4project-1.onrender.com/profile", {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -67,7 +67,7 @@ const ManageProfile = () => {
       return;
     }
 
-    fetch("http://127.0.0.1:5000/profile", {
+    fetch("https://phase4project-1.onrender.com/profile", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
